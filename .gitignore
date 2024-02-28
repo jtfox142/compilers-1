@@ -1,0 +1,9 @@
+p0
+*.o
+*.txt
+*.preorder
+*.postorder
+*.inorder
+p0_test*
+
+.vscode
