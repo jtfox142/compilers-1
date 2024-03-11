@@ -1,4 +1,5 @@
 #include "scanner.hpp"
+#include "token.hpp"
 
 #include <vector>
 #include <string>

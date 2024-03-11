@@ -1,5 +1,3 @@
-#include "node.hpp"
-#include "tree.hpp"
 #include "scanner.hpp"
 
 #include <iostream>
@@ -20,15 +18,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::deque<std::string> preTreeInput = scanner::getUserInput();
-    
-    //Initialize the root node
-    node::Node *root = new node::Node(preTreeInput.front());
-    preTreeInput.pop_front();
-    
-    tree::buildTree(preTreeInput, root);
-    
-    tree::outputTrees(root, scanner::getFileName());
+    std::deque<std::string> unprocessedInput = scanner::getUserInput();
 
     return 0;
 }
