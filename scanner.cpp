@@ -29,6 +29,7 @@ namespace {
         "then", "pick", "create", 
         "set", "func" 
     };
+    static int _lineNumber = 0;
 
 } //namespace
 
@@ -40,7 +41,7 @@ bool isKeyword(std::string tokenString) {
 bool isValidIdTok(std::string tokenString) {
     //Test if the idTok contains special characters
     for(std::string::iterator it = tokenString.begin(); it != tokenString.end(); ++it) {
-        if(!isalnum(*it)) {
+        if(!isalnum(*it) && (*it) != '_') {
             return false;
         }
     }
@@ -62,7 +63,11 @@ bool isValidIntTok(std::string tokenString) {
 //Grabs the next token. Tests the first char, identifies the most likely token type,
 //then checks for errors or reserved words
 token::Token scanner::getNextToken(std::string tokenString) {
-    std::cout << "In scanner. tokenString is " << tokenString << std::endl;
+    //_lineNumber++;
+
+    token::Token token;
+    token.tokenInstance = tokenString;
+    //token.lineNumber = _lineNumber;
 
     if(tokenString == "") {
         token::Token eof(token::tokenId::EOFTok, "EOF", 0, 0);
@@ -70,9 +75,6 @@ token::Token scanner::getNextToken(std::string tokenString) {
     }
 
     char beginningChar = tokenString.at(0);
-
-    token::Token token;
-    token.tokenInstance = tokenString;
         
     //If the beginning char is a letter, then it is an identifier token
     if(isalpha(beginningChar)) {
@@ -102,6 +104,5 @@ token::Token scanner::getNextToken(std::string tokenString) {
         token.tokenId = token::tokenId::opTok;
     }
 
-    std::cout << "scanner sending back " << token.tokenId << std::endl;
     return token;
 }
