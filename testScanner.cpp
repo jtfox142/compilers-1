@@ -2,6 +2,7 @@
 #include "scanner.hpp"
 #include "token.hpp"
 
+#include <iostream>
 #include <stack>
 #include <fstream>
 #include <deque>
@@ -19,6 +20,7 @@ void testScanner::start(std::string fileName) {
     std::ifstream inputStream (fileName.c_str());
 
     if(inputStream.is_open()) {
+        std::cout << "ifstream open. testScanner starting.\n";
         while(_lastToken.tokenId != token::tokenId::EOFTok) {
             if(inputStream.fail() || inputStream.bad()) {
                 throw std::runtime_error("ERROR: bad file read");
@@ -28,6 +30,7 @@ void testScanner::start(std::string fileName) {
             //Only works with tokens delimited by whitespace
             inputStream >> tokenString;
 
+            std::cout << "About to pushback\n";
             _tokenList.push_back(scanner::getNextToken(tokenString));
             _lastToken = _tokenList.back();
         }
@@ -37,11 +40,13 @@ void testScanner::start(std::string fileName) {
     }
 
     inputStream.close();
+    std::cout << "testScanner start complete.\n";
 }
 
 void testScanner::print() {
     std::deque<token::Token>::iterator it;
 
+    std::cout << "testScanner outputting.\n";
     for(it = _tokenList.begin(); it != _tokenList.end(); it++) {
         (*it).output();
     }

@@ -62,12 +62,13 @@ bool isValidIntTok(std::string tokenString) {
 //Grabs the next token. Tests the first char, identifies the most likely token type,
 //then checks for errors or reserved words
 token::Token scanner::getNextToken(std::string tokenString) {
+    std::cout << "In scanner. tokenString is " << tokenString << std::endl;
 
-    /*TODOif(inputStream.eof()) {
+    if(tokenString == "") {
         token::Token eof(token::tokenId::EOFTok, "EOF", 0, 0);
         return eof;
-    }*/
-    
+    }
+
     char beginningChar = tokenString.at(0);
 
     token::Token token;
@@ -101,6 +102,6 @@ token::Token scanner::getNextToken(std::string tokenString) {
         token.tokenId = token::tokenId::opTok;
     }
 
-
+    std::cout << "scanner sending back " << token.tokenId << std::endl;
     return token;
 }
