@@ -9,8 +9,8 @@
 
 namespace scanner {
 
-    token::Token getNextToken(std::ifstream& inputStream);
+    token::Token getNextToken(std::string);
 
-};  // namespace scanner
+}  // namespace scanner
 
 #endif  // scannerH

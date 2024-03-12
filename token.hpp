@@ -12,18 +12,22 @@ namespace token {
     class Token {
 
         public:
-            tokenId tokenId;
-            std::string tokenInstance;
-            int lineNumber, charNumber;
+            inline Token() {
+                tokenId = tokenId::idTok;
+                tokenInstance = "";
+                lineNumber = -1;
+                charNumber = -1;
+            };
 
-            Token();
-
-            Token(token::tokenId id, std::string instance, int lineNum, int charNum) {
+            inline Token(tokenId id, std::string instance, int lineNum, int charNum) {
                 tokenId = id;
                 tokenInstance = instance;
                 lineNumber = lineNum;
                 charNumber = charNum;
             }
+            tokenId tokenId;
+            std::string tokenInstance;
+            int lineNumber, charNumber;
             
             void output() {
                 std::cout << "{ " << tokenId << ", " << tokenInstance << ", " << lineNumber << "." << charNumber << " }";

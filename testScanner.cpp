@@ -1,3 +1,4 @@
+#include "testScanner.hpp"
 #include "scanner.hpp"
 #include "token.hpp"
 
@@ -12,8 +13,10 @@ namespace {
 
 }
 
-void start(std::ifstream inputStream) {
+//TODO filter for comments
+void testScanner::start(std::string fileName) {
     _lastToken.tokenId = token::tokenId::idTok;
+    std::ifstream inputStream (fileName.c_str());
 
     if(inputStream.is_open()) {
         while(_lastToken.tokenId != token::tokenId::EOFTok) {
@@ -21,7 +24,11 @@ void start(std::ifstream inputStream) {
                 throw std::runtime_error("ERROR: bad file read");
             }
 
-            _tokenList.push_back(scanner::getNextToken(inputStream));
+            std::string tokenString;
+            //Only works with tokens delimited by whitespace
+            inputStream >> tokenString;
+
+            _tokenList.push_back(scanner::getNextToken(tokenString));
             _lastToken = _tokenList.back();
         }
     }
@@ -32,7 +39,7 @@ void start(std::ifstream inputStream) {
     inputStream.close();
 }
 
-void print() {
+void testScanner::print() {
     std::deque<token::Token>::iterator it;
 
     for(it = _tokenList.begin(); it != _tokenList.end(); it++) {

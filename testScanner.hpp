@@ -1,9 +1,11 @@
 #ifndef testScannerH
 #define testScannerH
 
+#include <fstream>
+
 namespace testScanner {
 
-    void start();
+    void start(std::string);
     void print();
 
 }
