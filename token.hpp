@@ -3,17 +3,33 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 
-enum tokenId { idTok, keyTok, varNameTok, opTok, intTok, EOFTok};
+namespace token {
 
-class Token {
-    tokenId tokenId;
-    std::string tokenInstance;
-    int lineNumber, charNumber;
+    enum tokenId { idTok, keyTok, opTok, intTok, EOFTok};
 
-    void output() {
-        std::cout << "{ " << tokenId << ", " << tokenInstance << ", " << lineNumber << "." << charNumber << " }";
-    }
-};
+    class Token {
+
+        public:
+            tokenId tokenId;
+            std::string tokenInstance;
+            int lineNumber, charNumber;
+
+            Token();
+
+            Token(token::tokenId id, std::string instance, int lineNum, int charNum) {
+                tokenId = id;
+                tokenInstance = instance;
+                lineNumber = lineNum;
+                charNumber = charNum;
+            }
+            
+            void output() {
+                std::cout << "{ " << tokenId << ", " << tokenInstance << ", " << lineNumber << "." << charNumber << " }";
+            }
+    };
+
+}
 
 #endif //tokenH

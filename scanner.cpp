@@ -7,77 +7,103 @@
 #include <fstream>
 #include <iostream>
 #include <deque>
+#include <vector>
+#include <algorithm>
+
+/*
+TODO
+* Implement line and char numbers
+* 
+
+*/
 
 namespace {
 
     static std::deque<std::string> _userInput;
     static std::string _fileName;
+    static const std::vector<std::string> _keywords { 
+        "start", "stop", "while", 
+        "repeat", "until", "label", 
+        "return", "cin", "cout", 
+        "tape", "jump", "if", 
+        "then", "pick", "create", 
+        "set", "func" 
+    };
 
 } //namespace
 
-//If there are no provided args, place user input into default.txt
-void scanner::setFileName(int argc, char* argv[]) {
-    //The first argument should always be the path to the program
-    if(argc <= 1) {
-        //std::cout << "Opening a default file to handle input." << std::endl;
-
-        std::ofstream defaultFile;
-        _fileName = "default.txt";
-
-        //Need to convert string to c string for .open() function call
-        defaultFile.open(_fileName.c_str(), std::ios::out | std::ios::trunc);
-
-        std::string userInput;
-        std::getline(std::cin, userInput);
-
-        defaultFile << userInput;
-        defaultFile.close();
-
-        //std::cout << "\nDefault file has received input.\n";
-    }
-    else { //Otherwise, attempt to use the filename provided to the executable
-        _fileName = argv[1];
-    }
+bool isKeyword(std::string tokenString) {
+    bool found = (std::find(_keywords.begin(), _keywords.end(), tokenString) != _keywords.end());
+    return found;
 }
 
-//Pushes file data onto a deque, which is then used to build the tree
-//Also checks for bad input, like words that start with special characters
-void scanner::readFromFile() {
-    std::ifstream inputFile (_fileName.c_str());
-    std::string word;
+bool isValidIdTok(std::string tokenString) {
+    //Test if the idTok contains special characters
+    for(std::string::iterator it = tokenString.begin(); it != tokenString.end(); ++it) {
+        if(!isalnum(*it)) {
+            return false;
+        }
+    }
 
-    if(inputFile.is_open()) {
-        //std::cout << "File " << _fileName << " is open." << std::endl;
-        while(!inputFile.eof()) {
-            
-            if(inputFile.fail() || inputFile.bad()) {
-                throw std::runtime_error("ERROR: bad file read");
+    return true;
+}
+
+bool isValidIntTok(std::string tokenString) {
+    //Test if the intTok contains non-numbers
+    for(std::string::iterator it = tokenString.begin(); it != tokenString.end(); ++it) {
+        if(!isdigit(*it)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//Grabs the next token. Tests the first char, identifies the most likely token type,
+//then checks for errors or reserved words
+token::Token scanner::getNextToken(std::ifstream& inputStream) {
+
+    if(inputStream.eof()) {
+        token::Token eof(token::tokenId::EOFTok, "EOF", 0, 0);
+        return eof;
+    }
+
+    std::string tokenString;
+    //Only works with tokens delimited by whitespace
+    inputStream >> tokenString;
+    char beginningChar = tokenString.at(0);
+
+    token::Token token;
+    token.tokenInstance = tokenString;
+        
+    //If the beginning char is a letter, then it is an identifier token
+    if(isalpha(beginningChar)) {
+        //Check for reserved words
+        if(isKeyword(tokenString))
+            token.tokenId = token::tokenId::keyTok;
+        else {
+            //Checks the word for illegal characters
+            if(isValidIdTok(tokenString)) 
+                token.tokenId = token::tokenId::idTok;
+            else {
+                std::cerr << "ERROR: idTok " << tokenString << " contains an illegal character.";
+                exit(1);
             }
-
-            inputFile >> word;
-
-            //Test if the input contains special characters or numbers
-            for(std::string::iterator it = word.begin(); it != word.end(); ++it) {
-                if(!isalpha(*it)) {
-                    throw std::runtime_error("ERROR: Input file contains illegal characters.");
-                }
-            }
-
-            _userInput.push_back(word);
+        }
+    }
+    else if(isdigit(beginningChar)) {
+        if(isValidIntTok(tokenString)) {
+            token.tokenId = token::tokenId::intTok;
+        }
+        else {
+            std::cerr << "ERROR: intTok " << tokenString << " contains an illegal character.";
+            exit(1);
         }
     }
     else {
-        throw std::runtime_error("ERROR: could not open file. Possible bad file name.");
+        token.tokenId = token::tokenId::opTok;
     }
 
-    inputFile.close();
-    //std::cout << "File read complete. preTreeInput deque has been filled." << std::endl;
-}
 
-const std::deque<std::string>& scanner::getUserInput() {
-    return _userInput;
-}
-
-const std::string scanner::getFileName() {
-    return _fileName;
+    return token;
 }

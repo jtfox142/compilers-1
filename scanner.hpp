@@ -1,20 +1,16 @@
 #ifndef scannerH
 #define scannerH
 
+#include "token.hpp"
+
 #include <string>
 #include <vector>
 #include <deque>
 
 namespace scanner {
 
-    void setFileName(int argc, char* argv[]);
+    token::Token getNextToken(std::ifstream& inputStream);
 
-    const std::string getFileName();
-
-    void readFromFile();
-
-    const std::deque<std::string>& getUserInput();
-
-};  // namespace inputParsing
+};  // namespace scanner
 
 #endif  // scannerH
