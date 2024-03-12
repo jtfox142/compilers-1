@@ -40,12 +40,14 @@ void testScanner::start(std::string fileName) {
     }
 
     inputStream.close();
-}
+} 
 
 void testScanner::print() {
     std::deque<token::Token>::iterator it;
 
     for(it = _tokenList.begin(); it != _tokenList.end(); it++) {
+        if((*it).tokenInstance == "" && (*it).tokenId == -1)
+            continue; 
         (*it).output();
     }
 }

@@ -29,7 +29,6 @@ namespace {
         "then", "pick", "create", 
         "set", "func" 
     };
-    static int _lineNumber = 0;
 
 } //namespace
 
@@ -63,11 +62,8 @@ bool isValidIntTok(std::string tokenString) {
 //Grabs the next token. Tests the first char, identifies the most likely token type,
 //then checks for errors or reserved words
 token::Token scanner::getNextToken(std::string tokenString) {
-    //_lineNumber++;
-
     token::Token token;
     token.tokenInstance = tokenString;
-    //token.lineNumber = _lineNumber;
 
     if(tokenString == "") {
         token::Token eof(token::tokenId::EOFTok, "EOF", 0, 0);
@@ -75,6 +71,13 @@ token::Token scanner::getNextToken(std::string tokenString) {
     }
 
     char beginningChar = tokenString.at(0);
+    //Will error if there is no second char
+    if(beginningChar == '/') {
+        if(tokenString.at(1) == '/') {
+            std::cout << "Comment detected.\n";
+            return (token::Token());
+        }
+    }
         
     //If the beginning char is a letter, then it is an identifier token
     if(isalpha(beginningChar)) {
