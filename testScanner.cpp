@@ -16,11 +16,11 @@ namespace {
 
 //TODO filter for comments
 void testScanner::start(std::string fileName) {
-    _lastToken.tokenId = token::tokenId::idTok;
+    _lastToken.tokenId = token::tokenIdList::idTok;
     std::ifstream inputStream (fileName.c_str());
 
     if(inputStream.is_open()) {
-        while(_lastToken.tokenId != token::tokenId::EOFTok) {
+        while(_lastToken.tokenId != token::tokenIdList::EOFTok) {
             if(inputStream.fail() || inputStream.bad()) {
                 throw std::runtime_error("ERROR: bad file read");
             }

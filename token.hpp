@@ -7,7 +7,7 @@
 
 namespace token {
 
-    const enum tokenId { idTok, keyTok, opTok, intTok, EOFTok};
+    enum tokenIdList { idTok, keyTok, opTok, intTok, EOFTok};
 
     class Token {
 
@@ -19,7 +19,7 @@ namespace token {
                 charNumber = -1;
             };
 
-            inline Token(tokenId id, std::string instance, int lineNum, int charNum) {
+            inline Token(int id, std::string instance, int lineNum, int charNum) {
                 tokenId = id;
                 tokenInstance = instance;
                 lineNumber = lineNum;

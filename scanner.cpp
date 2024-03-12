@@ -66,7 +66,7 @@ token::Token scanner::getNextToken(std::string tokenString) {
     token.tokenInstance = tokenString;
 
     if(tokenString == "") {
-        token::Token eof(token::tokenId::EOFTok, "EOF", 0, 0);
+        token::Token eof(token::tokenIdList::EOFTok, "EOF", 0, 0);
         return eof;
     }
 
@@ -83,11 +83,11 @@ token::Token scanner::getNextToken(std::string tokenString) {
     if(isalpha(beginningChar)) {
         //Check for reserved words
         if(isKeyword(tokenString))
-            token.tokenId = token::tokenId::keyTok;
+            token.tokenId = token::tokenIdList::keyTok;
         else {
             //Checks the word for illegal characters
             if(isValidIdTok(tokenString)) 
-                token.tokenId = token::tokenId::idTok;
+                token.tokenId = token::tokenIdList::idTok;
             else {
                 std::cerr << "ERROR: idTok " << tokenString << " contains an illegal character.";
                 exit(1);
@@ -96,7 +96,7 @@ token::Token scanner::getNextToken(std::string tokenString) {
     }
     else if(isdigit(beginningChar)) {
         if(isValidIntTok(tokenString)) {
-            token.tokenId = token::tokenId::intTok;
+            token.tokenId = token::tokenIdList::intTok;
         }
         else {
             std::cerr << "ERROR: intTok " << tokenString << " contains an illegal character.";
@@ -104,7 +104,7 @@ token::Token scanner::getNextToken(std::string tokenString) {
         }
     }
     else {
-        token.tokenId = token::tokenId::opTok;
+        token.tokenId = token::tokenIdList::opTok;
     }
 
     return token;
