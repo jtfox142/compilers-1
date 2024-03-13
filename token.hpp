@@ -28,10 +28,6 @@ namespace token {
             int tokenId;
             std::string tokenInstance;
             int lineNumber, charNumber;
-            
-            void output() {
-                std::cout << "{ " << tokenId << ", " << tokenInstance << ", " << lineNumber << "." << charNumber << " }" << std::endl;
-            }
     };
 
 }

@@ -44,10 +44,11 @@ void testScanner::start(std::string fileName) {
 
 void testScanner::print() {
     std::deque<token::Token>::iterator it;
+    std::string tokenIdArray[] = {"idTok", "keyTok", "opTok", "intTok", "EOFTok"};
 
     for(it = _tokenList.begin(); it != _tokenList.end(); it++) {
         if((*it).tokenInstance == "" && (*it).tokenId == -1)
             continue; 
-        (*it).output();
+        std::cout << "{ " << tokenIdArray[(*it).tokenId] << ", " << (*it).tokenInstance << ", " << (*it).lineNumber << "." << (*it).charNumber << " }" << std::endl;
     }
 }
