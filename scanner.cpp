@@ -89,7 +89,8 @@ void getNextLine() {
     }
     getline(_inputStream, readLine);
     std::cout << "Readline: " << readLine << std::endl;
-    std::stringstream().swap(_stringLine);
+    _stringLine.str({});
+    _stringLine.clear();
     _stringLine << readLine;
     _lineNumber++;
     _charNumber = 1;
