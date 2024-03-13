@@ -89,10 +89,10 @@ void getNextLine() {
     }
     getline(_inputStream, readLine);
     std::cout << "Readline: " << readLine << std::endl;
-    _stringLine = std::stringstream();
+    std::stringstream().swap(_stringLine);
     _stringLine << readLine;
     _lineNumber++;
-    _charNumber = 0;
+    _charNumber = 1;
 }
 
 //
@@ -105,7 +105,7 @@ void scanner::startStream(std::string fileName) {
     //Initialize values
     getNextLine();
     _lineNumber = 1;
-    _charNumber = 0;
+    _charNumber = 1;
     _commentLine = -1;
 }
 
@@ -182,6 +182,9 @@ token::Token scanner::getNextToken() {
     }
 
     token.lineNumber = _lineNumber;
+    token.charNumber = _charNumber;
+
+    _charNumber += filteredString.length();
 
     std::cout << std::endl;
     return token;
