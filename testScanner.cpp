@@ -15,33 +15,28 @@ namespace {
 }
 
 //TODO filter for comments
+//Opens a stream to the file, begins collecting tokens from scanner
 void testScanner::start(std::string fileName) {
     _lastToken.tokenId = token::tokenIdList::idTok;
-    std::ifstream inputStream (fileName.c_str());
 
-    if(inputStream.is_open()) {
-        while(_lastToken.tokenId != token::tokenIdList::EOFTok) {
-            if(inputStream.fail() || inputStream.bad()) {
-                throw std::runtime_error("ERROR: bad file read");
-            }
-
-            //std::string line;
-            //std:getline(inputStream, line);
-            std::string tokenString;
-            //Only works with tokens delimited by whitespace
-            inputStream >> tokenString;
-
-            _tokenList.push_back(scanner::getNextToken(tokenString));
-            _lastToken = _tokenList.back();
-        }
-    }
-    else {
-        throw std::runtime_error("ERROR: could not open file. Possible bad file name.");
+    //std::string line;
+    //std:getline(inputStream, line);
+    std::string tokenString;
+    try {
+        scanner::startStream(fileName);
+    } catch(const std::exception& ex) {
+        std::cerr << ex.what() << '\n';
+        exit(1);
     }
 
-    inputStream.close();
+    std::cout << "Entering while loop\n";
+    while(_lastToken.tokenId != token::EOFTok) {
+        _tokenList.push_back(scanner::getNextToken());
+        _lastToken = _tokenList.back();
+    }
 } 
 
+//Translates tokenIds to string and prints tokens to screen
 void testScanner::print() {
     std::deque<token::Token>::iterator it;
     std::string tokenIdArray[] = {"idTok", "keyTok", "opTok", "intTok", "EOFTok"};

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 #include <stdexcept>
 #include <fstream>
 #include <iostream>
@@ -29,6 +30,11 @@ namespace {
         "then", "pick", "create", 
         "set", "func" 
     };
+    static int _lineNumber;
+    static int _charNumber;
+    static int _commentLine;
+    static std::ifstream _inputStream;
+    static std::stringstream _stringLine;
 
 } //namespace
 
@@ -59,47 +65,115 @@ bool isValidIntTok(std::string tokenString) {
     return true;
 }
 
+std::string filter(std::string tokenString) {
+    std::string comment = "//";
+    int charPos = tokenString.find(comment);
+    std::cout << "charPos is " << charPos << std::endl;
+    if(charPos != -1) {
+        tokenString.erase(charPos);
+        _commentLine = _lineNumber;
+    }
+    if(tokenString.length() == 0 && !_stringLine.eof())
+        tokenString = "--comment";
+
+    return tokenString;
+}
+
+//Fetches the next line of input
+void getNextLine() {
+    std::cout << "Getting next line\n";
+    std::string readLine;
+    if(!_inputStream.is_open()) {
+        std::cerr << "Input stream closed itself in scanner\n";
+        exit(1);   
+    }
+    getline(_inputStream, readLine);
+    std::cout << "Readline: " << readLine << std::endl;
+    _stringLine = std::stringstream();
+    _stringLine << readLine;
+    _lineNumber++;
+    _charNumber = 0;
+}
+
+//
+void scanner::startStream(std::string fileName) {
+    //std::cout << "Starting filestream\n";
+    _inputStream.open(fileName);
+    if(!_inputStream.is_open()) 
+        throw std::runtime_error("ERROR: could not open file. Possible bad file name.");
+    
+    //Initialize values
+    getNextLine();
+    _lineNumber = 1;
+    _charNumber = 0;
+    _commentLine = -1;
+}
+
 //Grabs the next token. Tests the first char, identifies the most likely token type,
 //then checks for errors or reserved words
-token::Token scanner::getNextToken(std::string tokenString) {
+token::Token scanner::getNextToken() {
+    //std::cout << "Getting next token\n";
+    
+    if(_lineNumber == _commentLine) {
+        std::cout << "Skipping comment line.\n";
+        getNextLine();
+    }
+
+    if(_stringLine.eof()) {
+        std::cout << "Reached ss eof.\n";
+        getNextLine();
+    }
+
+    std::cout << "ss: " << _stringLine.str() << std::endl;
+
+    std::string tokenString;
+    _stringLine >> tokenString;
+    std::cout << "Token string is " << tokenString <<std::endl;
+
+    std::string filteredString = filter(tokenString);
+    std::cout << "Filtered string is: " << filteredString << std::endl;
+
     token::Token token;
-    token.tokenInstance = tokenString;
+    token.tokenInstance = filteredString;
 
-    if(tokenString == "") {
-        token::Token eof(token::tokenIdList::EOFTok, "EOF", 0, 0);
-        return eof;
-    }
-
-    char beginningChar = tokenString.at(0);
-    //Will error if there is no second char
-    if(beginningChar == '/') {
-        if(tokenString.at(1) == '/') {
-            std::cout << "Comment detected.\n";
-            return (token::Token());
+    if(filteredString == "") {
+        if(_inputStream.eof()) {
+            std::cout << "EOF detected\n";
+            token::Token eof(token::tokenIdList::EOFTok, "EOF", _lineNumber, 0);
+            return eof;
         }
+        else
+            return (token::Token());
     }
+
+    if(filteredString == "--comment") {
+        std::cout << "Comment detected.\n";
+        return (token::Token());
+    }
+
+    char beginningChar = filteredString.at(0);
         
     //If the beginning char is a letter, then it is an identifier token
     if(isalpha(beginningChar)) {
         //Check for reserved words
-        if(isKeyword(tokenString))
+        if(isKeyword(filteredString))
             token.tokenId = token::tokenIdList::keyTok;
         else {
             //Checks the word for illegal characters
-            if(isValidIdTok(tokenString)) 
+            if(isValidIdTok(filteredString)) 
                 token.tokenId = token::tokenIdList::idTok;
             else {
-                std::cerr << "ERROR: idTok " << tokenString << " contains an illegal character.";
+                std::cerr << "ERROR: idTok " << filteredString << " contains an illegal character.";
                 exit(1);
             }
         }
     }
     else if(isdigit(beginningChar)) {
-        if(isValidIntTok(tokenString)) {
+        if(isValidIntTok(filteredString)) {
             token.tokenId = token::tokenIdList::intTok;
         }
         else {
-            std::cerr << "ERROR: intTok " << tokenString << " contains an illegal character.";
+            std::cerr << "ERROR: intTok " << filteredString << " contains an illegal character.";
             exit(1);
         }
     }
@@ -107,5 +181,8 @@ token::Token scanner::getNextToken(std::string tokenString) {
         token.tokenId = token::tokenIdList::opTok;
     }
 
+    token.lineNumber = _lineNumber;
+
+    std::cout << std::endl;
     return token;
 }
