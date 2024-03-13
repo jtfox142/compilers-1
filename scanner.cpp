@@ -11,13 +11,6 @@
 #include <vector>
 #include <algorithm>
 
-/*
-TODO
-* Implement line and char numbers
-* 
-
-*/
-
 namespace {
 
     static std::deque<std::string> _userInput;
@@ -68,7 +61,6 @@ bool isValidIntTok(std::string tokenString) {
 std::string filter(std::string tokenString) {
     std::string comment = "//";
     int charPos = tokenString.find(comment);
-    std::cout << "charPos is " << charPos << std::endl;
     if(charPos != -1) {
         tokenString.erase(charPos);
         _commentLine = _lineNumber;
@@ -81,14 +73,12 @@ std::string filter(std::string tokenString) {
 
 //Fetches the next line of input
 void getNextLine() {
-    std::cout << "Getting next line\n";
     std::string readLine;
     if(!_inputStream.is_open()) {
         std::cerr << "Input stream closed itself in scanner\n";
         exit(1);   
     }
     getline(_inputStream, readLine);
-    std::cout << "Readline: " << readLine << std::endl;
     _stringLine.str({});
     _stringLine.clear();
     _stringLine << readLine;
@@ -116,30 +106,28 @@ token::Token scanner::getNextToken() {
     //std::cout << "Getting next token\n";
     
     if(_lineNumber == _commentLine) {
-        std::cout << "Skipping comment line.\n";
+        //std::cout << "Skipping comment line.\n";
         getNextLine();
     }
 
     if(_stringLine.eof()) {
-        std::cout << "Reached ss eof.\n";
+        //std::cout << "Reached ss eof.\n";
         getNextLine();
     }
 
-    std::cout << "ss: " << _stringLine.str() << std::endl;
-
     std::string tokenString;
     _stringLine >> tokenString;
-    std::cout << "Token string is " << tokenString <<std::endl;
+    //std::cout << "Token string is " << tokenString <<std::endl;
 
     std::string filteredString = filter(tokenString);
-    std::cout << "Filtered string is: " << filteredString << std::endl;
+    //std::cout << "Filtered string is: " << filteredString << std::endl;
 
     token::Token token;
     token.tokenInstance = filteredString;
 
     if(filteredString == "") {
         if(_inputStream.eof()) {
-            std::cout << "EOF detected\n";
+            //std::cout << "EOF detected\n";
             token::Token eof(token::tokenIdList::EOFTok, "EOF", _lineNumber, 0);
             return eof;
         }
@@ -148,7 +136,7 @@ token::Token scanner::getNextToken() {
     }
 
     if(filteredString == "--comment") {
-        std::cout << "Comment detected.\n";
+        //std::cout << "Comment detected.\n";
         return (token::Token());
     }
 
@@ -187,6 +175,6 @@ token::Token scanner::getNextToken() {
 
     _charNumber += filteredString.length();
 
-    std::cout << std::endl;
+    //std::cout << std::endl;
     return token;
 }

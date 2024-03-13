@@ -14,7 +14,6 @@ namespace {
 
 }
 
-//TODO filter for comments
 //Opens a stream to the file, begins collecting tokens from scanner
 void testScanner::start(std::string fileName) {
     _lastToken.tokenId = token::tokenIdList::idTok;
@@ -29,7 +28,6 @@ void testScanner::start(std::string fileName) {
         exit(1);
     }
 
-    std::cout << "Entering while loop\n";
     while(_lastToken.tokenId != token::EOFTok) {
         _tokenList.push_back(scanner::getNextToken());
         _lastToken = _tokenList.back();
